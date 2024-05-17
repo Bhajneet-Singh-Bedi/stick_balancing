@@ -13,10 +13,12 @@ from ament_index_python.packages import get_package_share_directory,get_package_
 def generate_launch_description():
     share_dir = get_package_share_directory('stick_balancing')
 
-    xacro_file = os.path.join(share_dir, 'urdf','gz_world.xacro')
+    xacro_file = os.path.join(share_dir, 'urdf','stick.xacro')
+    assert os.path.exists(xacro_file), "The stick.xacro file does not exists in "+str(xacro_file)
+
     robot_description_config = xacro.process_file(xacro_file)
     robot_urdf = robot_description_config.toxml()
-
+    print(robot_urdf)
     world_file_name = 'gazebo.world'
     world_path = os.path.join(share_dir, 'worlds','gazebo.world'), ''
     
