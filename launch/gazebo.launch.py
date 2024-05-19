@@ -25,7 +25,7 @@ def generate_launch_description():
   spawn_x_val = '0.0'
   spawn_y_val = '0.0'
   spawn_z_val = '0.0'
-  spawn_yaw_val = '0.00'
+  spawn_yaw_val = '0.0'
  
   ############ You do not need to change anything below this line #############
    
@@ -33,6 +33,7 @@ def generate_launch_description():
   pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
   pkg_share = FindPackageShare(package=package_name).find(package_name)
   default_urdf_model_path = xacro.process_file(os.path.join(pkg_share, urdf_file_path)).toxml()
+  # default_urdf_model_path=os.path.join(pkg_share, "urdf/stick.urdf")
   robot_description = {"robot_description": default_urdf_model_path}
   world_path = os.path.join(pkg_share, world_file_path)
   # gazebo_models_path = os.path.join(pkg_share, gazebo_models_path)
@@ -125,7 +126,7 @@ def generate_launch_description():
     package='gazebo_ros', 
     executable='spawn_entity.py',
     arguments=['-entity', 'stick', 
-                '-topic', 'robot_description',
+                '-topic', '/robot_description',
                     '-x', spawn_x_val,
                     '-y', spawn_y_val,
                     '-z', spawn_z_val,

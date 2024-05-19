@@ -1,0 +1,62 @@
+<?xml version='1.0'?>
+<robot name="demo_robot">
+
+    <material name="blue">
+        <color rgba="0.0 0.0 1.0 1.0" />
+    </material>
+
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0" />
+    </material>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="0.1 0.1 0.8" />
+            </geometry>
+            <origin xyz="0 0 0.4" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.1 0.1 0.8" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.4" />
+            <inertia ixx="0.00048333" iyy="0.0013367" izz="0.0018133"
+                ixy="0" ixz="0" iyz="0" />
+        </inertial>
+    </link>
+
+    <link name="stick_extender">
+        <visual>
+            <geometry>
+                <cylinder radius="0.02" length="0.2" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="red" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="0.02" length="0.2" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.1" />
+            <inertia ixx="0.00048333" iyy="0.0013367" izz="0.0018133"
+                ixy="0" ixz="0" iyz="0" />
+        </inertial>
+    </link>
+
+
+    <joint name="base_stick_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="stick_extender" />
+        <origin xyz="0.1 0 0.7" rpy="0 1.57 0" />
+    </joint>
+
+
+</robot>
