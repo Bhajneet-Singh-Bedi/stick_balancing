@@ -1,22 +1,25 @@
 <?xml version='1.0'?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="car_robot_chassis">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stick">
 
     <!--dummy
     link-->
-    <xacro:property name="chassis_length" value="0.14" />
-    <xacro:property name="chassis_width" value="0.12" />
-    <xacro:property name="chassis_height" value="0.01" />
-    <xacro:property name="chassis_mass" value="0.4" />
-    <xacro:property name="wheel_radius" value="0.02" />
-    <xacro:property name="wheel_height" value="0.01" />
-    <xacro:property name="wheel_mass" value="0.2" />
+    <xacro:property name="stand_length" value="0.05" />
+    <xacro:property name="stand_width" value="0.05" />
+    <xacro:property name="stand_height" value="0.8" />
+    <xacro:property name="stand_mass" value="0.4" />
+    <xacro:property name="base_extender_radius" value="0.02" />
+    <xacro:property name="base_extender_height" value="0.2" />
+    <xacro:property name="base_extender_mass" value="0.01" />
+    <xacro:property name="stick_radius" value="0.02" />
+    <xacro:property name="stick_height" value="0.5" />
+    <xacro:property name="stick_mass" value="0.05" />
 
 
-    <!-- <xacro:macro name="box_inertia" params="mass L W H">
+    <xacro:macro name="box_inertia" params="mass L W H">
         <inertia ixx="${1/12 * mass * (L**2 + W**2 )}" iyy="${1/12 * mass * (H**2 + W**2 )}"
             izz="${1/12 * mass * (L**2 + H**2 )}"
             ixy="0" ixz="0" iyz="0" />
-    </xacro:macro> -->
+    </xacro:macro>
 
     <xacro:macro name="cylinder_inertia" params="mass R H">
         <inertia ixx="${1/12 * mass * (3 * R**2 + H**2 )}" iyy="${1/12 * mass * (3 * R**2 + H**2 )}"
@@ -25,20 +28,59 @@
     </xacro:macro>
     <link name="base_link" />
 
-    <link name="chassis-link">
+    <!-- All materials -->
+    <material name="brown">
+        <color rgba="0.3 0.0 0.4 1.0" />
+    </material>
+    <material name="blue">
+        <color rgba="0.0 0.4 0.5 1.0" />
+    </material>
+    <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0" />
+    </material>
+    <material name="green">
+        <color rgba="0.0 1.0 0.0 1.0" />
+    </material>
+
+    <!-- Heavy Base -->
+    <link name="heavy_base">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
+                <box size="0.3 0.3 0.05" />
             </geometry>
-            <material name="brown">
-                <color rgba="0.3 0 0.4 1" />
-            </material>
+            <material name="green" />
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
+                <box size="0.3 0.3 0.05" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1" />
+            <xacro:box_inertia mass="1" L="0.3" W="0.3" H="0.3" />
+        </inertial>
+    </link>
+
+    <joint name="base-link-heavy-base" type="fixed">
+        <parent link="base_link" />
+        <child link="heavy_base" />
+        <origin xyz="0 0 0.025" rpy="0 0 0" />
+    </joint>
+    <!-- Base Stand -->
+    <link name="stand-link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="${stand_length} ${stand_width} ${stand_height}" />
+            </geometry>
+            <material name="brown" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="${stand_length} ${stand_width} ${stand_height}" />
             </geometry>
         </collision>
         <inertial>
@@ -48,51 +90,111 @@
         </inertial>
     </link>
 
-    <joint name="joint-base-chassis" type="fixed">
+    <joint name="joint-base-stand" type="fixed">
         <parent link="base_link" />
-        <child link="chassis-link" />
-        <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" />
+        <child link="stand-link" />
+        <origin xyz="0 0 ${stand_height/2}" rpy="0 0 0" />
+    </joint>
+
+    <!-- Link between stand and stick -->
+    <link name="base_extender">
+        <visual>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${base_extender_radius}" length="${base_extender_height}" />
+            </geometry>
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${base_extender_radius}" length="${base_extender_height}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <mass value="${base_extender_mass}" />
+            <xacro:cylinder_inertia mass="${base_extender_mass}" R="${base_extender_radius}"
+                H="${base_extender_height}" />
+        </inertial>
+    </link>
+    <joint name="base-extender-base-joint" type="continuous">
+        <parent link="stand-link" />
+        <child link="base_extender" />
+        <origin xyz="0.05 0 0.3" rpy="0 0 1.57" />
+        <axis xyz="0 0 0" />
     </joint>
 
 
-    <material name="blue">
-        <color rgba="0 0.4 0.5 1" />
-    </material>
+    <!-- Stick -->
+    <link name="stick">
+        <visual>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${stick_radius}" length="${stick_height}" />
+            </geometry>
+            <material name="red" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${stick_radius}" length="${stick_height}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <mass value="${stick_mass}" />
+            <xacro:cylinder_inertia mass="${stick_mass}" R="${stick_radius}"
+                H="${stick_height}" />
+        </inertial>
+    </link>
+    <joint name="base-extender-stick-joint" type="fixed">
+        <parent link="base_extender" />
+        <child link="stick" />
+        <origin xyz="0 -0.08 -0.25" rpy="1.57 0 1.57" />
+        <!-- <axis xyz="0 0 0" /> -->
+    </joint>
 
-    <xacro:macro name="wheel" params="x_position y_position x_reflect y_reflect">
-        <!-- ${x_position}-${y_position}-wheel-link -->
-        <link name="${x_position}-${y_position}-wheel-link">
-            <visual>
-                <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
-                <geometry>
-                    <cylinder radius="${wheel_radius}" length="${wheel_height}" />
-                </geometry>
-                <material name="blue" />
-            </visual>
-            <collision>
-                <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
-                <geometry>
-                    <cylinder radius="${wheel_radius}" length="${wheel_height}" />
-                </geometry>
-            </collision>
-            <inertial>
-                <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
-                <mass value="${wheel_mass}" />
-                <xacro:cylinder_inertia mass="${wheel_mass}" R="${wheel_radius}" H="${wheel_height}" />
-            </inertial>
-        </link>
-        <joint name="joint-chassis-${x_position}-${y_position}-wheel" type="continuous">
-            <parent link="chassis-link" />
-            <child link="${x_position}-${y_position}-wheel-link" />
-            <origin
-                xyz="${x_reflect*0.3*chassis_length} ${y_reflect*(chassis_width/2+wheel_height/2)} 0"
-                rpy="0 0 0" />
-            <axis xyz="0 1 0" />
-        </joint>
+    <!-- <xacro:macro name="wheel" params="x_position y_position x_reflect y_reflect">
+        ${x_position}-${y_position}-wheel-link
+        <link
+        name="${x_position}-${y_position}-wheel-link">
+        <visual>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_height}" />
+            </geometry>
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_height}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
+            <mass value="${wheel_mass}" />
+            <xacro:cylinder_inertia mass="${wheel_mass}" R="${wheel_radius}" H="${wheel_height}" />
+        </inertial>
+    </link>
+        <joint
+        name="joint-chassis-${x_position}-${y_position}-wheel" type="continuous">
+        <parent link="chassis-link" />
+        <child link="${x_position}-${y_position}-wheel-link" />
+        <origin
+            xyz="${x_reflect*0.3*chassis_length} ${y_reflect*(chassis_width/2+wheel_height/2)} 0"
+            rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+    </joint>
     </xacro:macro>
 
-    <xacro:wheel x_position="front" y_position="right" x_reflect="1" y_reflect="1" />
-    <xacro:wheel x_position="front" y_position="left" x_reflect="1" y_reflect="-1" />
-    <xacro:wheel x_position="rare" y_position="right" x_reflect="-1" y_reflect="1" />
-    <xacro:wheel x_position="rare" y_position="left" x_reflect="-1" y_reflect="-1" />
+    <xacro:wheel x_position="front"
+        y_position="right" x_reflect="1" y_reflect="1" />
+    <xacro:wheel x_position="front"
+        y_position="left" x_reflect="1" y_reflect="-1" />
+    <xacro:wheel x_position="rare"
+        y_position="right" x_reflect="-1" y_reflect="1" />
+    <xacro:wheel x_position="rare"
+        y_position="left" x_reflect="-1" y_reflect="-1" /> -->
 </robot>
