@@ -63,13 +63,13 @@
         </inertial>
     </link>
 
-    <joint name="base-link-heavy-base" type="fixed">
+    <joint name="base_link_heavy_base" type="fixed">
         <parent link="base_link" />
         <child link="heavy_base" />
         <origin xyz="0 0 0.025" rpy="0 0 0" />
     </joint>
     <!-- Base Stand -->
-    <link name="stand-link">
+    <link name="stand_link">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
@@ -90,9 +90,9 @@
         </inertial>
     </link>
 
-    <joint name="joint-base-stand" type="fixed">
+    <joint name="joint_base_stand" type="fixed">
         <parent link="base_link" />
-        <child link="stand-link" />
+        <child link="stand_link" />
         <origin xyz="0 0 ${stand_height/2}" rpy="0 0 0" />
     </joint>
 
@@ -118,8 +118,8 @@
                 H="${base_extender_height}" />
         </inertial>
     </link>
-    <joint name="base-extender-base-joint" type="continuous">
-        <parent link="stand-link" />
+    <joint name="base_extender_base_joint" type="continuous">
+        <parent link="stand_link" />
         <child link="base_extender" />
         <origin xyz="0.05 0 0.3" rpy="0 0 1.57" />
         <axis xyz="0 0 0" />
@@ -144,16 +144,38 @@
         <inertial>
             <origin xyz="0 0 0" rpy="${pi * 0.5} 0 0" />
             <mass value="${stick_mass}" />
-            <xacro:cylinder_inertia mass="${stick_mass}" R="${stick_radius}"
-                H="${stick_height}" />
+            <xacro:cylinder_inertia mass="${stick_mass}" R="${stick_radius}" H="${stick_height}" />
         </inertial>
     </link>
-    <joint name="base-extender-stick-joint" type="fixed">
+    <joint name="base_extender_stick_joint" type="fixed">
         <parent link="base_extender" />
         <child link="stick" />
         <origin xyz="0 -0.08 -0.25" rpy="1.57 0 1.57" />
-        <!-- <axis xyz="0 0 0" /> -->
     </joint>
+
+
+    <!-- ROS2 Control Part -->
+    <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+        <joint name="base_extender_base_joint">
+            <command_interface name="position">
+                <param name="min">0</param>
+                <param name="max">3.14</param>
+            </command_interface>
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+            <state_interface name="effort" />
+        </joint>
+    </ros2_control>
+
+    <gazebo>
+        <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+            <parameters>$(find stick_balancing)/config/controller_configuration.yaml</parameters>
+        </plugin>
+    </gazebo>
+
 
     <!-- <xacro:macro name="wheel" params="x_position y_position x_reflect y_reflect">
         ${x_position}-${y_position}-wheel-link
