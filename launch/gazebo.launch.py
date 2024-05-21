@@ -1,8 +1,5 @@
-# Author: Addison Sears-Collins
-# Date: September 23, 2021
-# Description: Load a URDF and world file into Gazebo.
-# https://automaticaddison.com
- 
+#!/usr/bin/env python3
+# This lanch file is for launching gazebo which contains only the model.
 import os
 import xacro
 from launch import LaunchDescription
@@ -27,7 +24,6 @@ def generate_launch_description():
   spawn_z_val = '0.0'
   spawn_yaw_val = '0.0'
  
-  ############ You do not need to change anything below this line #############
    
   # Set the path to different files and folders.  
   pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
@@ -72,11 +68,6 @@ def generate_launch_description():
     name='use_robot_state_pub',
     default_value='True',
     description='Whether to start the robot state publisher')
- 
-  declare_use_rviz_cmd = DeclareLaunchArgument(
-    name='use_rviz',
-    default_value='True',
-    description='Whether to start RVIZ')
      
   declare_use_sim_time_cmd = DeclareLaunchArgument(
     name='use_sim_time',
@@ -106,9 +97,6 @@ def generate_launch_description():
     executable='joint_state_publisher',
     name='joint_state_publisher',
     condition=UnlessCondition(gui))
- 
-  # Launch RViz
-
  
   # Start Gazebo server
   start_gazebo_server_cmd = IncludeLaunchDescription(
@@ -141,8 +129,7 @@ def generate_launch_description():
 
   ld.add_action(declare_simulator_cmd)
   ld.add_action(declare_urdf_model_path_cmd)
-  ld.add_action(declare_use_robot_state_pub_cmd)  
-  ld.add_action(declare_use_rviz_cmd) 
+  ld.add_action(declare_use_robot_state_pub_cmd)
   ld.add_action(declare_use_sim_time_cmd)
   ld.add_action(declare_use_simulator_cmd)
   ld.add_action(declare_world_cmd)
