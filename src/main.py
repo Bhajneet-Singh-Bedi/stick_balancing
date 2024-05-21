@@ -28,7 +28,7 @@ class StickBalancingActionClient(Node):
 
         point2 = JointTrajectoryPoint()
         point2.time_from_start=Duration(seconds=1, nanoseconds=0).to_msg()
-        point2.positions=[3.14]
+        point2.positions=[angle]
 
         points.append(point1)
         points.append(point2)
@@ -71,7 +71,7 @@ def main(args=None):
     rclpy.init(args=args)
     node = StickBalancingActionClient()
     # angle=float(sys.argv[1])
-    future=node.send_goal("1")
+    future=node.send_goal(1.0)
     rclpy.spin(node)
     # rclpy.shutdown()
 
