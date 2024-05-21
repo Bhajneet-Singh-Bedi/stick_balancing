@@ -9,10 +9,10 @@
     <xacro:property name="stand_mass" value="0.4" />
     <xacro:property name="base_extender_radius" value="0.02" />
     <xacro:property name="base_extender_height" value="0.2" />
-    <xacro:property name="base_extender_mass" value="0.01" />
+    <xacro:property name="base_extender_mass" value="0.1" />
     <xacro:property name="stick_radius" value="0.02" />
     <xacro:property name="stick_height" value="0.5" />
-    <xacro:property name="stick_mass" value="0.05" />
+    <xacro:property name="stick_mass" value="0.1" />
 
 
     <xacro:macro name="box_inertia" params="mass L W H">
@@ -68,6 +68,7 @@
         <child link="heavy_base" />
         <origin xyz="0 0 0.025" rpy="0 0 0" />
     </joint>
+
     <!-- Base Stand -->
     <link name="stand_link">
         <visual>
@@ -85,8 +86,7 @@
         </collision>
         <inertial>
             <mass value="0.4" />
-            <inertia ixx="0.00048333" iyy="0.0013367" izz="0.0018133"
-                ixy="0" ixz="0" iyz="0" />
+            <xacro:box_inertia mass="0.4" L="${stand_length}" W="${stand_width}" H="${stand_height}" />
         </inertial>
     </link>
 
@@ -122,7 +122,7 @@
         <parent link="stand_link" />
         <child link="base_extender" />
         <origin xyz="0.05 0 0.3" rpy="0 0 1.57" />
-        <axis xyz="0 0 0" />
+        <axis xyz="0 1 0" />
     </joint>
 
 
@@ -151,6 +151,8 @@
         <parent link="base_extender" />
         <child link="stick" />
         <origin xyz="0 -0.08 -0.25" rpy="1.57 0 1.57" />
+        <!-- <axis xyz="0 1 0" /> -->
+
     </joint>
 
 
@@ -161,7 +163,7 @@
         </hardware>
         <joint name="base_extender_base_joint">
             <command_interface name="position">
-                <param name="min">0</param>
+                <param name="min">-3.14</param>
                 <param name="max">3.14</param>
             </command_interface>
             <state_interface name="position" />
