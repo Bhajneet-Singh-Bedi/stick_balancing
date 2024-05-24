@@ -162,9 +162,9 @@
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
         </hardware>
         <joint name="base_extender_base_joint">
-            <command_interface name="position">
-                <param name="min">-3.14</param>
-                <param name="max">3.14</param>
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
             </command_interface>
             <state_interface name="position" />
             <state_interface name="velocity" />
@@ -174,7 +174,7 @@
 
     <gazebo>
         <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-            <parameters>$(find stick_balancing)/config/controller_configuration.yaml</parameters>
+            <parameters>$(find stick_balancing)/config/controller_configuration_velocity.yaml</parameters>
         </plugin>
     </gazebo>
 

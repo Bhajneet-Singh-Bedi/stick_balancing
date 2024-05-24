@@ -28,33 +28,29 @@ def generate_launch_description():
         )
     )
 
-    # Launch joint_state_broadcaster
-    joint_state_broadcaster_spawner=Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster",
-                   "--controller-manager","/controller_manager"],
+
+
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'joint_state_broadcaster'],
+        output='screen'
     )
 
-
-    # Launch joint_trajectory_controller for the stick (robot)
-    robot_controller_spawner=Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_trajectory_controller", "-c", "/controller_manager"],
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
+        output='screen'
     )
-
 
     return LaunchDescription([
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=joint_state_broadcaster_spawner,
-                on_exit=[robot_controller_spawner],
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_joint_trajectory_controller],
             )
         ),
 
         gz_launch,
-        joint_state_broadcaster_spawner
+        load_joint_state_broadcaster
     ])
 
 
