@@ -24,6 +24,7 @@ ament_package()
 install(PROGRAMS
   src/main_position.py
   src/main_velocity.py
+  src/stick_balance.py
   DESTINATION lib/${PROJECT_NAME}
   # PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
   # GROUP_READ GROUP_WRITE GROUP_EXECUTE
